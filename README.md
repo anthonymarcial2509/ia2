@@ -15,6 +15,13 @@ Este proyecto simula estrategias de ruleta (Martingala, Fibonacci, Paroli) combi
 ```bash
 pip install -r requirements.txt
 ```
+El archivo `requirements.txt` incluye:
+
+- nginx
+- streamlit
+- pandas
+- scikit-learn
+- matplotlib
 
 2. Ejecuta la app con Streamlit:
 
