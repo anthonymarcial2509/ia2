@@ -28,6 +28,8 @@ El archivo `requirements.txt` incluye:
 ```bash
 streamlit run main.py
 ```
+En despliegues automatizados el archivo `Procfile` ya incluye ese comando, por
+lo que la aplicación se iniciará automáticamente en servicios que lo soporten.
 
 3. Ajusta el capital inicial y número de rondas desde la interfaz.
 
