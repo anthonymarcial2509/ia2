@@ -1,4 +1,4 @@
-# Simulador simplificado para API
+
 import random
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -8,7 +8,13 @@ from sklearn.preprocessing import StandardScaler
 class RuletaIA:
     def __init__(self):
         self.historial = []
-        self.modelo = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
+        # Se incrementan los estimadores y se elimina la limitación de profundidad
+        # para mejorar la precisión de las predicciones.
+        self.modelo = RandomForestClassifier(
+            n_estimators=200,
+            max_depth=None,
+            random_state=42,
+        )
         self.scaler = StandardScaler()
         self.entrenado = False
 
@@ -52,32 +58,64 @@ def estrategia_martingala(exito, estado):
         estado['apuesta'] *= 2
     return estado
 
+def estrategia_fibonacci(exito, estado):
+    if exito:
+        estado['indice'] = max(0, estado['indice'] - 2)
+    else:
+        if len(estado['fibo']) <= estado['indice'] + 1:
+            estado['fibo'].append(estado['fibo'][-1] + estado['fibo'][-2])
+        estado['indice'] += 1
+    estado['apuesta'] = estado['apuesta_base'] * estado['fibo'][estado['indice']]
+    return estado
+
+def estrategia_paroli(exito, estado):
+    if exito:
+        estado['racha'] += 1
+        estado['apuesta'] *= 2
+        if estado['racha'] == 3:
+            estado['apuesta'] = estado['apuesta_base']
+            estado['racha'] = 0
+    else:
+        estado['apuesta'] = estado['apuesta_base']
+        estado['racha'] = 0
+    return estado
+
 estrategias = {
-    'Martingala': estrategia_martingala
+    'Martingala': estrategia_martingala,
+    'Fibonacci': estrategia_fibonacci,
+    'Paroli': estrategia_paroli
 }
 
-def simular(capital_inicial=50, rondas=100):
+def simular(capital_inicial=50, rondas=200):
     resultados = []
-    ruleta = RuletaIA()
-    capital = capital_inicial
-    estado = {'apuesta_base': 2, 'apuesta': 2, 'racha': 0}
-    for ronda in range(rondas):
-        if capital <= 0:
-            break
-        if ronda % 50 == 0:
-            ruleta.entrenar_modelo()
-        pred = ruleta.predecir()
-        res = ruleta.generar_resultado()
-        ruleta.historial.append(res)
-        exito = (pred == res['color'])
-        capital += estado['apuesta'] if exito else -estado['apuesta']
-        estado = estrategia_martingala(exito, estado)
-        resultados.append({
-            'ronda': ronda + 1,
-            'prediccion': pred,
-            'real': res['color'],
-            'ganado': exito,
-            'apuesta': estado['apuesta'],
-            'capital': capital
-        })
+    for nombre, funcion in estrategias.items():
+        ruleta = RuletaIA()
+        capital = capital_inicial
+        estado = {
+            'apuesta_base': 2,
+            'apuesta': 2,
+            'racha': 0,
+            'indice': 0,
+            'fibo': [1, 1]
+        }
+        for ronda in range(rondas):
+            if capital <= 0:
+                break
+            if ronda % 50 == 0:
+                ruleta.entrenar_modelo()
+            pred = ruleta.predecir()
+            res = ruleta.generar_resultado()
+            ruleta.historial.append(res)
+            exito = (pred == res['color'])
+            capital += estado['apuesta'] if exito else -estado['apuesta']
+            estado = funcion(exito, estado)
+            resultados.append({
+                'estrategia': nombre,
+                'ronda': ronda + 1,
+                'prediccion': pred,
+                'real': res['color'],
+                'ganado': exito,
+                'apuesta': estado['apuesta'],
+                'capital': capital
+            })
     return pd.DataFrame(resultados)
