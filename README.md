@@ -1,40 +1,17 @@
 # Simulador de Ruleta con IA
 
-Este proyecto simula estrategias de ruleta (Martingala, Fibonacci, Paroli) combinadas con predicción de resultados mediante un modelo de inteligencia artificial.
+Este proyecto es una API creada con FastAPI que simula apuestas de ruleta usando IA y estrategias como Martingala.
 
-## Características
+## Endpoints
 
- - IA con Random Forest (200 árboles) para predecir resultados con mayor precisión
- - Visualización en tiempo real con Streamlit
- - Análisis de ROI, porcentaje de acierto, rachas y estrategias
+- `GET /`: Verifica si el servidor está activo.
+- `POST /simular`: Ejecuta la simulación.
 
-## Cómo usar
+### Ejemplo de llamada POST:
 
-1. Instala las dependencias:
-
-```bash
-pip install -r requirements.txt
+```json
+{
+  "capital": 100,
+  "rondas": 200
+}
 ```
-El archivo `requirements.txt` incluye:
-
-- streamlit
-- pandas
-- scikit-learn
-- matplotlib
-
-2. Ejecuta la app con Streamlit:
-
-```bash
-streamlit run main.py
-```
-En despliegues automatizados el archivo `Procfile` ya incluye ese comando, por
-lo que la aplicación se iniciará automáticamente en servicios que lo soporten.
-
-3. Ajusta el capital inicial y número de rondas desde la interfaz.
-
-El panel muestra la evolución del capital por estrategia y una tabla resumen
-con ROI y porcentaje de acierto para cada método.
-
-## Licencia
-
-MIT
