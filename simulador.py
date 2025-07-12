@@ -8,7 +8,13 @@ from sklearn.preprocessing import StandardScaler
 class RuletaIA:
     def __init__(self):
         self.historial = []
-        self.modelo = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=42)
+        # Se incrementan los estimadores y se elimina la limitación de profundidad
+        # para mejorar la precisión de las predicciones.
+        self.modelo = RandomForestClassifier(
+            n_estimators=200,
+            max_depth=None,
+            random_state=42,
+        )
         self.scaler = StandardScaler()
         self.entrenado = False
 
