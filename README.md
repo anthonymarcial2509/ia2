@@ -17,6 +17,7 @@ pip install -r requirements.txt
 ```
 El archivo `requirements.txt` incluye:
 
+- nginx
 - streamlit
 - pandas
 - scikit-learn
