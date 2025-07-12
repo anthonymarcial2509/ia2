@@ -1,4 +1,6 @@
 nginx
+Copiar
+Editar
 streamlit
 pandas
 scikit-learn
