@@ -16,14 +16,22 @@ def mostrar_dashboard():
             st.write(f"### Estrategia: {estrategia}")
             st.line_chart(datos[['ronda', 'capital']].set_index('ronda'))
 
+        st.subheader("📋 Opciones por Ronda")
+        for estrategia in df['estrategia'].unique():
+            datos = df[df['estrategia'] == estrategia][['ronda', 'prediccion', 'real', 'apuesta', 'capital']]
+            st.write(f"### Estrategia: {estrategia}")
+            st.dataframe(datos)
+
         st.subheader("🔎 Tabla Resumen")
-        resumen = df.groupby('estrategia').agg({
-            'capital': ['first', 'last'],
-            'ganado': 'sum',
-            'apuesta': 'mean'
-        })
-        resumen.columns = ['Inicial', 'Final', 'Aciertos', 'Promedio Apuesta']
-        resumen['ROI (%)'] = (resumen['Final'] - resumen['Inicial']) / resumen['Inicial'] * 100
+        resumen = df.groupby('estrategia').agg(
+            Inicial=("capital", "first"),
+            Final=("capital", "last"),
+            Aciertos=("ganado", "sum"),
+            Promedio_Apuesta=("apuesta", "mean"),
+            Porc_Acierto=("ganado", "mean"),
+        )
+        resumen["ROI (%)"] = (resumen["Final"] - resumen["Inicial"]) / resumen["Inicial"] * 100
+        resumen["Porcentaje Acierto (%)"] = resumen.pop("Porc_Acierto") * 100
         st.dataframe(resumen)
 
 if __name__ == "__main__":
